@@ -263,6 +263,7 @@ export default function AdminBlogsPage() {
   const [formError, setFormError] = useState('');
   const [uploadNotice, setUploadNotice] = useState('');
   const [urlWarning, setUrlWarning] = useState('');
+  const [imageLoadError, setImageLoadError] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [composeMode, setComposeMode] = useState('split');
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -367,6 +368,7 @@ export default function AdminBlogsPage() {
     if (name === 'imageUrl') {
       const { cleanUrl, warning } = getCleanImageUrl(value);
       setUrlWarning(warning);
+      setImageLoadError(false);
       setFormValues((current) => ({
         ...current,
         imageUrl: cleanUrl,
@@ -397,6 +399,7 @@ export default function AdminBlogsPage() {
     setFormError('');
     setUploadNotice('');
     setUrlWarning('');
+    setImageLoadError(false);
   };
 
   const handleEdit = (post) => {
@@ -405,6 +408,7 @@ export default function AdminBlogsPage() {
     setFormError('');
     setUploadNotice('');
     setUrlWarning('');
+    setImageLoadError(false);
     if (editor) {
       editor.commands.setContent(post.contentHtml || post.content || '<p></p>', {
         emitUpdate: false,
@@ -448,6 +452,7 @@ export default function AdminBlogsPage() {
     setFormError('');
     setUploadNotice('');
     setIsUploadingImage(true);
+    setImageLoadError(false);
 
     try {
       const uploadedUrl = await uploadNewsletterImage(file, currentUser?.email || 'admin');
@@ -457,9 +462,7 @@ export default function AdminBlogsPage() {
         imageUrl: uploadedUrl,
       }));
 
-      insertImageIntoEditor(uploadedUrl, file.name);
-
-      setUploadNotice('Image uploaded and inserted into content.');
+      setUploadNotice('Featured image uploaded successfully.');
     } catch (error) {
       console.warn('Firebase upload failed, trying base64 fallback:', error);
       try {
@@ -469,8 +472,7 @@ export default function AdminBlogsPage() {
           ...current,
           imageUrl: base64Url,
         }));
-        insertImageIntoEditor(base64Url, file.name);
-        setUploadNotice('Image optimized and saved locally inside post.');
+        setUploadNotice('Featured image optimized and saved locally inside post.');
       } catch (fallbackError) {
         setFormError(`Failed to process image: ${fallbackError.message || error.message}`);
       }
@@ -784,11 +786,19 @@ export default function AdminBlogsPage() {
                 <h3 className="font-title-lg text-primary mb-2">Live Preview</h3>
                 <p className="font-body-md text-on-surface-variant mb-4">{formValues.summary || 'No summary yet.'}</p>
                 {formValues.imageUrl && (
-                  <img
-                    src={formValues.imageUrl}
-                    alt="Preview"
-                    className="w-full h-56 object-cover rounded-lg border border-outline-variant mb-4"
-                  />
+                  <div className="relative mb-4">
+                    <img
+                      src={formValues.imageUrl}
+                      alt="Preview"
+                      onError={() => setImageLoadError(true)}
+                      className="w-full h-56 object-cover rounded-lg border border-outline-variant"
+                    />
+                    {imageLoadError && (
+                      <p className="text-error bg-error-container border border-error rounded-lg p-2 text-xs leading-relaxed mt-2">
+                        שגיאה בטעינת התמונה. ייתכן שהקישור אינו קישור תמונה ישיר (צריך להסתיים ב-.jpg, .png וכו'), או שהאתר המקורי חוסם הצגה של התמונה באתרים אחרים. מומלץ להוריד את התמונה ולהעלות אותה כקובץ מקומי.
+                      </p>
+                    )}
+                  </div>
                 )}
                 <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: livePreviewHtml }} />
               </div>
@@ -816,6 +826,11 @@ export default function AdminBlogsPage() {
             {urlWarning && (
               <p className="text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-2 text-xs leading-relaxed">
                 {urlWarning}
+              </p>
+            )}
+            {imageLoadError && (
+              <p className="text-error bg-error-container border border-error rounded-lg p-2 text-xs leading-relaxed">
+                שגיאה בטעינת התמונה. ודא שהעתקת את "כתובת התמונה" (קליק ימני &gt; העתק כתובת תמונה). אם האתר חוסם שיתוף תמונות, מומלץ להוריד את התמונה ולהעלות אותה כקובץ מקומי.
               </p>
             )}
           </div>

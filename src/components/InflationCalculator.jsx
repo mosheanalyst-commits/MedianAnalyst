@@ -204,7 +204,7 @@ export default function InflationCalculator() {
         
         <ParamRow
           label="Prime Rate"
-          sublabel="Current prime interest rate (to update)"
+          sublabel="Current prime interest rate"
           value={primeRate}
           onChange={setPrimeRate}
           suffix="%"
@@ -214,7 +214,7 @@ export default function InflationCalculator() {
         
         <ParamRow
           label="Fed Funds Rate"
-          sublabel="Current Federal Funds rate (to update)"
+          sublabel="Current Federal Funds rate"
           value={fedFundsRate}
           onChange={setFedFundsRate}
           suffix="%"

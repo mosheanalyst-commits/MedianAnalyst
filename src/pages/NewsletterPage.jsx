@@ -142,7 +142,7 @@ export default function NewsletterPage() {
             borderLeft: '4px solid var(--color-secondary)',
           }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter p-gutter">
+          <div className={`grid grid-cols-1 ${featuredArticle.imageUrl?.trim() ? 'md:grid-cols-2' : ''} gap-gutter p-gutter`}>
             <div className="space-y-3 flex flex-col justify-center">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="bg-secondary-fixed text-on-secondary-fixed px-3 py-1 rounded-full font-label-sm uppercase tracking-wider">
@@ -159,19 +159,15 @@ export default function NewsletterPage() {
               <RenderHtml html={featuredArticle.contentHtml || featuredArticle.content} />
             </div>
 
-            <div className="relative h-64 md:h-full min-h-[280px] overflow-hidden rounded-lg bg-surface-container">
-              {featuredArticle.imageUrl ? (
+            {featuredArticle.imageUrl?.trim() && (
+              <div className="relative h-64 md:h-full min-h-[280px] overflow-hidden rounded-lg bg-surface-container">
                 <img
                   src={featuredArticle.imageUrl}
                   alt="Featured newsletter visual"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-outline font-label-sm">
-                  No featured image
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </article>
       )}

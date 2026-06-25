@@ -422,7 +422,7 @@ const CALCULATOR_CONST_DEFINITIONS = [
         key: 'defaultDjiaStart',
         label: 'Default DJIA Beginning Year',
         description: 'Default value for DJIA beginning of a year input.',
-        defaultValue: 46.053,
+        defaultValue: 46053,
         min: 0.001,
         step: 0.001,
       },

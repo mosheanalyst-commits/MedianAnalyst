@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import useCalculatorConsts from '../hooks/useCalculatorConsts';
 
 /**
@@ -17,7 +18,7 @@ const QUICK_RISK_DEFAULTS = {
   inflationBias: 0.1,
   defaultPublicDebt: 122.49,
   defaultInflationFromPrime: 1.61,
-  defaultDjiaStart: 46.053,
+  defaultDjiaStart: 46053,
 };
 
 // ─── Pure calculation model for a single scenario ───────────────────────────
@@ -146,13 +147,16 @@ function ParamRow({ label, sublabel, value, onChange, disabled = false, suffix =
   );
 }
 
-function ResultRow({ label, value, highlight = false, large = false }) {
+function ResultRow({ label, sublabel, value, highlight = false, large = false }) {
   return (
     <div className={`grid grid-cols-1 sm:grid-cols-[1fr_140px] gap-3 items-center py-3 px-4 border-b border-outline-variant/20 last:border-b-0 ${
       highlight ? 'bg-secondary-container/15' : ''
     }`}>
       <div className={`font-medium ${highlight ? 'text-primary' : 'text-on-surface-variant'} ${large ? 'text-base' : 'text-sm'}`}>
-        {label}
+        <div>{label}</div>
+        {sublabel && (
+          <div className="text-xs text-on-surface-variant font-normal mt-0.5">{sublabel}</div>
+        )}
       </div>
       <div className={`text-center font-data-tabular font-bold ${
         highlight ? 'text-secondary text-lg' : 'text-primary'
@@ -256,7 +260,7 @@ export default function QuickRiskReturnCalculator() {
         
         <ResultRow
           label="Interest Rate (Risk-indifferent)"
-          sublabel="Debt Ratio × Inflation"
+          sublabel="The basis for calculating risk and return"
           value={fmt(results.main.riskIndifferentRate, 5)}
           highlight
         />
@@ -420,6 +424,26 @@ export default function QuickRiskReturnCalculator() {
             <span className="material-symbols-outlined text-[20px]">refresh</span>
             Reset to Defaults
           </button>
+        </div>
+      </div>
+
+      {/* ── Guidance Banner / Callout ── */}
+      <div className="bg-primary-container/10 border border-primary/20 p-5 rounded-xl flex gap-3 items-start">
+        <span className="material-symbols-outlined text-primary text-2xl shrink-0 mt-0.5">
+          trending_up
+        </span>
+        <div className="space-y-1">
+          <p className="font-body-md text-on-surface-variant leading-relaxed">
+            After you get the calculated rate for short-term trading: Enter the debt-to-GDP, inflation, and calculated rate on the{' '}
+            <Link
+              to="/calculators/machete"
+              className="text-primary font-bold hover:underline inline-flex items-center gap-0.5"
+            >
+              Machete page
+              <span className="material-symbols-outlined text-sm">open_in_new</span>
+            </Link>{' '}
+            to get an upper and lower end range.
+          </p>
         </div>
       </div>
     </div>

@@ -256,7 +256,20 @@ export default function MarketValueCalculator() {
         <StepHeader label="Step 1 — Calculate the Risk" icon="warning" />
         <ParamRow
           label="Corporate Equities"
-          sublabel="Link to L_101 — Row 15 (to update)"
+          sublabel={
+            <span>
+              Link to{' '}
+              <a
+                href="https://www.federalreserve.gov/releases/z1/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary font-bold hover:underline inline-flex items-center gap-0.5"
+              >
+                L.101 — Row 15
+                <span className="material-symbols-outlined text-[10px]">open_in_new</span>
+              </a>
+            </span>
+          }
           value={corporateEquities}
           onChange={setCorporateEquities}
         />
@@ -311,7 +324,7 @@ export default function MarketValueCalculator() {
         <OperationIndicator op="÷" />
         <ParamRow
           label="Current GDP in Dollars"
-          sublabel="Same GDP value as Step 1 (to update)"
+          sublabel="Same GDP value as Step 1"
           value={currentGDP}
           onChange={setCurrentGDP}
         />

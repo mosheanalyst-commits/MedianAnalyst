@@ -48,7 +48,7 @@ export default function PlaceholderPage() {
       <nav className="mb-6 flex items-center gap-2 text-xs font-label-sm text-on-surface-variant">
         <Link to="/" className="hover:text-secondary transition-colors">Home</Link>
         <span className="material-symbols-outlined text-xs">chevron_right</span>
-        <Link to="/#calculators" className="hover:text-secondary transition-colors">Calculators</Link>
+        <Link to="/calculators" className="hover:text-secondary transition-colors">Calculators</Link>
         <span className="material-symbols-outlined text-xs">chevron_right</span>
         <span className="text-primary font-bold">{calculator.title}</span>
       </nav>

@@ -36,12 +36,15 @@ function computeMachete(
   const macheteRisk = rangeOfRisk > 0 ? Math.sqrt(rangeOfRisk) : 0;
 
   // Step 7: Asset boundaries
-  const upperRange = price + macheteRisk;
-  const lowerRange = price - macheteRisk;
+  // Machata coefficient for upper range = (MacheteRisk / 100) + 1
+  const upwardCoeff = (macheteRisk / 100) + 1;
+  // Machata coefficient for lower range = (100 - MacheteRisk) / 100
+  const downwardCoeff = (100 - macheteRisk) / 100;
 
-  // Coefficients
-  const upwardCoeff = 1 + (macheteRisk / price);
-  const downwardCoeff = macheteRisk / price;
+  // Upper limit = Price * Machata coefficient for upper range
+  const upperRange = price * upwardCoeff;
+  // Lower limit = Price * Machata coefficient for lower range
+  const lowerRange = price * downwardCoeff;
 
   return {
     debtRatio,
@@ -167,7 +170,7 @@ export default function MacheteCalculator() {
         
         <ParamRow
           label="The Public Debt"
-          sublabel="Current public debt coefficient (to update)"
+          sublabel="Current public debt coefficient"
           value={publicDebt}
           onChange={setPublicDebt}
           suffix="%"
@@ -193,7 +196,7 @@ export default function MacheteCalculator() {
         
         <ParamRow
           label="Financial Inflation"
-          sublabel="Current financial inflation rate (to update)"
+          sublabel="Current financial inflation rate"
           value={financialInflation}
           onChange={setFinancialInflation}
           suffix="%"
@@ -253,17 +256,18 @@ export default function MacheteCalculator() {
             <div className="px-4 py-2 bg-secondary-container/10 border-b border-outline-variant/20">
               <span className="font-label-sm text-secondary font-bold uppercase tracking-wider">Upper End of the Range</span>
             </div>
-            <ResultRow label="Theoretical Price" value={fmt(assetPrice, 2)} />
-            <OperationIndicator op="+" />
-            <ResultRow label="Machete Volatility" value={fmt(results.macheteRisk, 8)} />
+            <ResultRow label="Machete — the potential risk inherent in debt and inflation" value={fmt(results.macheteRisk, 8)} />
+            <OperationIndicator op=":" />
+            <ResultRow label="Divide by 100 plus 1" value="100" />
+            <ResultRow label="Machata coefficient for upper range" value={fmt(results.upwardCoeff, 8)} highlight />
+            <OperationIndicator op="×" />
+            <ResultRow label="The Market Price of a Theoretical Asset" value={fmt(assetPrice, 2)} />
             <ResultRow
-              label="Upper Boundary"
+              label="Upper Limit"
               value={fmt(results.upperRange, 6)}
               highlight
               large
             />
-            <div className="h-px bg-outline-variant/20 my-1" />
-            <ResultRow label="Upward Movement Coeff." value={fmt(results.upwardCoeff, 7)} />
           </div>
           
           {/* Lower Range */}
@@ -271,17 +275,18 @@ export default function MacheteCalculator() {
             <div className="px-4 py-2 bg-error-container/20 border-b border-outline-variant/20">
               <span className="font-label-sm text-error font-bold uppercase tracking-wider">Lower End of the Range</span>
             </div>
-            <ResultRow label="Theoretical Price" value={fmt(assetPrice, 2)} />
+            <ResultRow label="Base Constant" value="100" />
             <OperationIndicator op="-" />
-            <ResultRow label="Machete Volatility" value={fmt(results.macheteRisk, 8)} />
+            <ResultRow label="Machete — the potential risk inherent in debt and inflation" value={fmt(results.macheteRisk, 8)} />
+            <ResultRow label="Machata coefficient for lower range" value={fmt(results.downwardCoeff, 8)} highlight />
+            <OperationIndicator op="×" />
+            <ResultRow label="The Market Price of a Theoretical Asset" value={fmt(assetPrice, 2)} />
             <ResultRow
-              label="Lower Boundary"
+              label="Lower Limit"
               value={fmt(results.lowerRange, 8)}
               highlight
               large
             />
-            <div className="h-px bg-outline-variant/20 my-1" />
-            <ResultRow label="Downward Movement Coeff." value={fmt(results.downwardCoeff, 7)} />
           </div>
         </div>
       </div>
@@ -308,7 +313,7 @@ export default function MacheteCalculator() {
 
         <div className="mt-5 pt-5 border-t border-outline-variant/30 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
           <div className="p-3 bg-white/60 rounded-lg">
-            <div className="text-xs text-on-surface-variant mb-1 font-label-sm">Lower Boundary</div>
+            <div className="text-xs text-on-surface-variant mb-1 font-label-sm">Lower Limit</div>
             <div className="font-data-tabular font-bold text-primary">{fmt(results.lowerRange, 6)}</div>
           </div>
           <div className="p-3 bg-white/60 rounded-lg border-2 border-secondary/20">
@@ -316,7 +321,7 @@ export default function MacheteCalculator() {
             <div className="font-data-tabular font-bold text-secondary text-lg">{fmt(results.macheteRisk, 6)}%</div>
           </div>
           <div className="p-3 bg-white/60 rounded-lg">
-            <div className="text-xs text-on-surface-variant mb-1 font-label-sm">Upper Boundary</div>
+            <div className="text-xs text-on-surface-variant mb-1 font-label-sm">Upper Limit</div>
             <div className="font-data-tabular font-bold text-primary">{fmt(results.upperRange, 6)}</div>
           </div>
         </div>

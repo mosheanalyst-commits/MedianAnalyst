@@ -146,7 +146,7 @@ export default function MarketIndicesCalculator() {
         
         <ParamRow
           label="Total Marketable Financial Assets"
-          sublabel="Based on Federal Reserve Report Z.1, Table L.101 (to update)"
+          sublabel="Based on Federal Reserve Report Z.1, Table L.101"
           value={marketableAssets}
           onChange={setMarketableAssets}
           suffix="$B"
@@ -168,7 +168,7 @@ export default function MarketIndicesCalculator() {
         
         <ParamRow
           label="Current GDP in Dollars"
-          sublabel="Quarterly GDP parameter (to update)"
+          sublabel="Quarterly GDP parameter"
           value={currentGDP}
           onChange={setCurrentGDP}
           suffix="$B"
@@ -222,7 +222,7 @@ export default function MarketIndicesCalculator() {
         
         <ParamRow
           label="DJIA Moving Average Rate"
-          sublabel="Moving average rate for the previous quarter (to update)"
+          sublabel="Moving average rate for the previous quarter"
           value={djiaMovingAverage}
           onChange={setDjiaMovingAverage}
         />

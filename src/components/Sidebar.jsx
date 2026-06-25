@@ -99,7 +99,7 @@ export default function Sidebar({ activeSection = 'home', onNavigate }) {
         MedianAnalyst
       </div>
       
-      <nav className="flex flex-col gap-2 flex-1">
+      <nav className="flex flex-col gap-2 flex-1 overflow-y-auto pr-1">
         {navItems.map((item) => {
           if (item.hasSubItems) {
             return (

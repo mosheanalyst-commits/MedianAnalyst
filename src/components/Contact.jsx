@@ -3,7 +3,7 @@ export default function Contact() {
   return (
     <section className="w-full max-w-[1000px] px-margin-mobile md:px-margin-desktop py-stack-lg mx-auto mb-12" id="contact">
       <div className="w-full mx-auto">
-        <div className="rounded-2xl p-12 text-center relative overflow-hidden text-on-surface bg-secondary-container/20">
+        <div className="rounded-2xl p-6 sm:p-12 text-center relative overflow-hidden text-on-surface bg-secondary-container/20">
           {/* Aesthetic background glow */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-secondary rounded-full blur-[100px] opacity-20"></div>
           <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-primary-fixed rounded-full blur-[100px] opacity-10"></div>
@@ -14,16 +14,16 @@ export default function Contact() {
           </p>
           
           <a 
-            className="inline-flex items-center gap-4 text-2xl md:text-4xl font-bold hover:text-primary transition-colors group text-primary justify-center" 
+            className="inline-flex items-center gap-2 sm:gap-4 text-sm min-[360px]:text-base sm:text-2xl md:text-4xl font-bold hover:text-primary transition-colors group text-primary justify-center max-w-full overflow-hidden" 
             href="mailto:mosheanalyst@gmail.com"
           >
             <img 
               alt="Email" 
-              className="w-10 h-10 md:w-16 md:h-16 object-contain" 
+              className="w-6 h-6 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain shrink-0" 
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJdC5QPiA3aGj8j1MBfm5ZUUYNJ_RuBHZcvpK6xs1iohXUGf0e3Bj9YTmPnVdvcLIWUfFYbS4KfHJQwdsiUktdsdEUQAVQReecd4eYPuZuSbGnxUBehtdPRRaJ02ThAEMyjFMaeuCVazSBMUT_PzfSxquzLMHlStZ2JEOlBNf2ZP-Ikfn6jmQ3XXnVQjVtTM0G_XGqLr2ZZwLHffqplXFyQvXkx_T71LPVcw-NTs2YYWvZTdzlCIMU880ea0cI4Et_OsikkKPyevs"
             />
-            <span>mosheanalyst@gmail.com</span>
-            <span className="material-symbols-outlined text-4xl transform group-hover:translate-x-2 transition-transform">
+            <span className="break-all">mosheanalyst@gmail.com</span>
+            <span className="material-symbols-outlined text-xl sm:text-4xl transform group-hover:translate-x-2 transition-transform shrink-0">
               arrow_forward
             </span>
           </a>

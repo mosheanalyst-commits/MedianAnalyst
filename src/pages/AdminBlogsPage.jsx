@@ -154,6 +154,106 @@ function ToolbarButton({ label, isActive = false, onClick, disabled = false }) {
   );
 }
 
+function getCleanImageUrl(url) {
+  if (!url) return { cleanUrl: '', warning: '' };
+  url = url.trim();
+
+  let cleanUrl = url;
+  let warning = '';
+
+  try {
+    const urlObj = new URL(url);
+
+    // Google Drive share links
+    // Format: https://drive.google.com/file/d/FILE_ID/view...
+    if (urlObj.hostname.includes('drive.google.com')) {
+      const match = urlObj.pathname.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+      if (match && match[1]) {
+        cleanUrl = `https://drive.google.com/uc?export=view&id=${match[1]}`;
+      } else {
+        const id = urlObj.searchParams.get('id');
+        if (id) {
+          cleanUrl = `https://drive.google.com/uc?export=view&id=${id}`;
+        }
+      }
+    }
+
+    // Google Search Images
+    // Format: https://www.google.com/imgres?imgurl=...
+    else if (urlObj.hostname.includes('google.') && urlObj.pathname.includes('/imgres')) {
+      const imgurl = urlObj.searchParams.get('imgurl');
+      if (imgurl) {
+        cleanUrl = decodeURIComponent(imgurl);
+      }
+    }
+    
+    // Google Search redirect links
+    else if (urlObj.hostname.includes('google.') && urlObj.pathname.includes('/url')) {
+      const imgurl = urlObj.searchParams.get('imgurl');
+      if (imgurl) {
+        cleanUrl = decodeURIComponent(imgurl);
+      } else {
+        const urlParam = urlObj.searchParams.get('url');
+        if (urlParam && urlParam.match(/\.(jpeg|jpg|gif|png|webp|svg)/i)) {
+          cleanUrl = decodeURIComponent(urlParam);
+        }
+      }
+    }
+
+    // Shortened non-direct Google URLs
+    else if (
+      urlObj.hostname.includes('images.app.goo.gl') ||
+      urlObj.hostname.includes('photos.app.goo.gl') ||
+      urlObj.hostname.includes('photos.google.com')
+    ) {
+      warning = 'שים לב: זהו קישור מקוצר או פרטי של גוגל. כדי שהתמונה תוצג לכולם, יש להעתיק את כתובת התמונה הישירה (קליק ימני על התמונה > "העתק כתובת תמונה").';
+    }
+  } catch (e) {
+    // Ignore invalid URL errors while typing
+  }
+
+  return { cleanUrl, warning };
+}
+
+function compressAndConvertToBase64(file, maxWidth = 1000, maxHeight = 1000, quality = 0.7) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+      img.onerror = (err) => reject(new Error('Failed to load image for compression.'));
+    };
+    reader.onerror = (err) => reject(new Error('Failed to read image file.'));
+  });
+}
+
 export default function AdminBlogsPage() {
   const { currentUser } = useOutletContext();
   const [posts, setPosts] = useState([]);
@@ -162,6 +262,7 @@ export default function AdminBlogsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
   const [uploadNotice, setUploadNotice] = useState('');
+  const [urlWarning, setUrlWarning] = useState('');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [composeMode, setComposeMode] = useState('split');
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -263,10 +364,19 @@ export default function AdminBlogsPage() {
 
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
-    setFormValues((current) => ({
-      ...current,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    if (name === 'imageUrl') {
+      const { cleanUrl, warning } = getCleanImageUrl(value);
+      setUrlWarning(warning);
+      setFormValues((current) => ({
+        ...current,
+        imageUrl: cleanUrl,
+      }));
+    } else {
+      setFormValues((current) => ({
+        ...current,
+        [name]: type === 'checkbox' ? checked : value,
+      }));
+    }
   };
 
   const handleDatePartChange = (part, value) => {
@@ -286,6 +396,7 @@ export default function AdminBlogsPage() {
     setFormValues(INITIAL_FORM);
     setFormError('');
     setUploadNotice('');
+    setUrlWarning('');
   };
 
   const handleEdit = (post) => {
@@ -293,6 +404,7 @@ export default function AdminBlogsPage() {
     setFormValues(toFormValues(post));
     setFormError('');
     setUploadNotice('');
+    setUrlWarning('');
     if (editor) {
       editor.commands.setContent(post.contentHtml || post.content || '<p></p>', {
         emitUpdate: false,
@@ -349,7 +461,19 @@ export default function AdminBlogsPage() {
 
       setUploadNotice('Image uploaded and inserted into content.');
     } catch (error) {
-      setFormError(error.message || 'Image upload failed.');
+      console.warn('Firebase upload failed, trying base64 fallback:', error);
+      try {
+        setUploadNotice('Firebase upload failed/timed out. Optimizing image locally...');
+        const base64Url = await compressAndConvertToBase64(file);
+        setFormValues((current) => ({
+          ...current,
+          imageUrl: base64Url,
+        }));
+        insertImageIntoEditor(base64Url, file.name);
+        setUploadNotice('Image optimized and saved locally inside post.');
+      } catch (fallbackError) {
+        setFormError(`Failed to process image: ${fallbackError.message || error.message}`);
+      }
     } finally {
       setIsUploadingImage(false);
       event.target.value = '';
@@ -377,7 +501,15 @@ export default function AdminBlogsPage() {
       insertImageIntoEditor(uploadedUrl, file.name);
       setUploadNotice('Inline image uploaded successfully.');
     } catch (error) {
-      setFormError(error.message || 'Inline image upload failed.');
+      console.warn('Firebase inline upload failed, trying base64 fallback:', error);
+      try {
+        setUploadNotice('Firebase upload failed/timed out. Optimizing inline image...');
+        const base64Url = await compressAndConvertToBase64(file);
+        insertImageIntoEditor(base64Url, file.name);
+        setUploadNotice('Inline image optimized and inserted.');
+      } catch (fallbackError) {
+        setFormError(`Failed to process inline image: ${fallbackError.message || error.message}`);
+      }
     } finally {
       setIsUploadingImage(false);
       event.target.value = '';
@@ -681,6 +813,11 @@ export default function AdminBlogsPage() {
               placeholder="https://..."
               className="w-full border border-outline-variant rounded-lg px-3 py-2 bg-white"
             />
+            {urlWarning && (
+              <p className="text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-2 text-xs leading-relaxed">
+                {urlWarning}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2 rounded-xl border border-dashed border-outline-variant p-3 bg-surface-container-low">

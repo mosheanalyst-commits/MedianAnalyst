@@ -106,7 +106,12 @@ async function uploadNewsletterImage(file, ownerEmail) {
   const objectPath = `newsletterImages/${ownerSegment}/${Date.now()}-${safeName}`;
   const imageRef = ref(storage, objectPath);
 
-  await uploadBytes(imageRef, file, { contentType: file.type || 'image/jpeg' });
+  const uploadPromise = uploadBytes(imageRef, file, { contentType: file.type || 'image/jpeg' });
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Firebase Storage upload timed out.')), 8000)
+  );
+
+  await Promise.race([uploadPromise, timeoutPromise]);
   return getDownloadURL(imageRef);
 }
 

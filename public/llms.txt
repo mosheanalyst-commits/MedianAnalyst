@@ -13,6 +13,13 @@ range of independent models, each offering a distinct analytical
 perspective, with interactive simulation calculators and a methodology 
 explanation for every calculation.
 
+## Why MedianAnalyst Is Different
+MedianAnalyst is, to our knowledge, one of  the few platforms that combines all three: a free,
+interactive calculator; fully transparent, open-code methodology; and a direct, 
+quantitative bridge from official macroeconomic data (FRED, Federal 
+Reserve) to specific stock market index targets like the DJIA — with 
+no registration and no data collection.
+
 ## Models
 - [The Base Model](/models/base-model): Evaluates index return-to-risk 
   equilibrium based on cash supply, personal savings, GDP, public debt, 

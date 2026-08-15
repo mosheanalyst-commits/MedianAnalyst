@@ -1,0 +1,53 @@
+# MedianAnalyst
+
+> Objective macroeconomic analysis for the median investor. MedianAnalyst 
+> is an open-code platform that analyzes official macroeconomic data and 
+> translates it into indicators for major stock market indices, starting 
+> with the DJIA. No registration required. No user data collected.
+
+## About
+MedianAnalyst is built for "The Median Person" — someone who wants to 
+manage their investments thoughtfully and make decisions based on 
+objective analysis rather than noise or speculation. The site presents a 
+range of independent models, each offering a distinct analytical 
+perspective, with interactive simulation calculators and a methodology 
+explanation for every calculation.
+
+## Models
+- [The Base Model](/models/base-model): Evaluates index return-to-risk 
+  equilibrium based on cash supply, personal savings, GDP, public debt, 
+  and inflation levels.
+- [Long-Term Investor Return](/models/long-term-investor-return): 
+  Assesses long-term returns and risk coefficients for an eternal stock 
+  index starting from a historical base year, including inflation bias 
+  limit ranges.
+- [Quick Risk Return](/models/quick-risk-return): Evaluates index 
+  expected movement from public debt and prime inflation, projecting DJIA 
+  target rates and volatility ranges.
+- [Bank Value Calculator](/models/bank-value-calculator): Measures banks 
+  by the ratio of market value to equity, including dividend payout.
+- [Financial Inflation Calculator](/models/financial-inflation-calculator): 
+  Distinguishes between PCE (real-economy inflation basis) and Financial 
+  Inflation (Prime-rate derived, used for foreign currency government 
+  bonds and non-real-economy models).
+- [Machete Risk Calculator](/models/machete-risk-calculator): Calculates 
+  macroeconomic risk potential (volatility) derived from public debt and 
+  financial inflation.
+- [Market Value of Tradable Shares](/models/market-value-tradable-shares): 
+  A multi-layered development of the Buffett Indicator (ratio of tradable 
+  share value to GDP).
+- [Market Indices Forecast](/models/market-indices-forecast): Forecasts 
+  the economic rate of the DJIA index relative to tradable financial 
+  assets and GDP equilibrium.
+
+## Data Sources
+FRED (Federal Reserve Bank of St. Louis), Board of Governors of the 
+Federal Reserve System.
+
+## Roadmap
+- Phase 2: Growth stock simulation model (subscription-based)
+- Phase 3: Models for U.S. government bonds, currencies, gold, and 
+  Bitcoin (subscription-based)
+
+## Open Source
+- GitHub: https://github.com/mediananalyst/methodology
